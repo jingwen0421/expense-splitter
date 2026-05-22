@@ -28,6 +28,11 @@ function ExpenseForm({
     Math.abs(customShareTotal - expenseAmount) < 0.01 &&
     expenseAmount > 0;
 
+  const equalShare =
+  splitType === "equal" && splitAmong.length > 0
+    ? expenseAmount / splitAmong.length
+    : 0;
+
   return (
     <div className="rounded-2xl bg-white p-6 shadow">
       <div className="flex items-center justify-between">
@@ -165,18 +170,28 @@ function ExpenseForm({
             ))
           )}
         </div>
+          {splitType === "equal" && splitAmong.length > 0 && expenseAmount > 0 && (
+            <p className="mt-3 rounded-lg bg-[#EEF6EF] px-3 py-2 text-sm font-medium text-[#5B8C63]">
+                Each selected member will pay RM {equalShare.toFixed(2)}
+            </p>
+            )}
 
-        {splitType === "unequal" && (
-          <p
-            className={`mt-3 text-sm font-medium ${
-              isCustomShareCorrect ? "text-green-700" : "text-red-700"
-            }`}
-          >
-            Custom shares total: RM {customShareTotal.toFixed(2)} / RM{" "}
-            {expenseAmount.toFixed(2)}
-          </p>
-        )}
+                {splitType === "unequal" && (
+                <p
+                    className={`mt-3 rounded-lg px-3 py-2 text-sm font-medium ${
+                    isCustomShareCorrect
+                        ? "bg-[#EEF6EF] text-[#5B8C63]"
+                        : "bg-red-50 text-red-700"
+                    }`}
+                >
+                    Custom shares total: RM {customShareTotal.toFixed(2)} / RM{" "}
+                    {expenseAmount.toFixed(2)}
+                </p>
+                )}
+       
       </div>
+
+      
 
       <button
         onClick={addExpense}
