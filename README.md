@@ -83,3 +83,9 @@ Another challenge was member deletion. I added a guard to prevent users from rem
 ```bash
 npm install
 npm run dev
+```
+
+Then open the local development link shown in the terminal.
+
+## AI Usage Disclosure
+AI tools were used as a learning, planning, and debugging assistant during development. The final implementation was reviewed, tested, customized, and organized by me.
