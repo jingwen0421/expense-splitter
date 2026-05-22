@@ -425,6 +425,39 @@ function App() {
           </div>
       {activeTab === "overview" && (
         <>
+        {members.length === 0 && expenses.length === 0 && (
+          <div className="mb-6 rounded-3xl border border-dashed border-[#D8D4CA] bg-white p-6 shadow-sm">
+            <h3 className="text-xl font-bold text-[#24352B]">
+              Start in 3 simple steps
+            </h3>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                <p className="text-sm font-semibold text-[#5B8C63]">Step 1</p>
+                <p className="mt-1 font-medium text-[#24352B]">Add members</p>
+                <p className="mt-1 text-sm text-[#6A756D]">
+                  Add friends, housemates, or trip members.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                <p className="text-sm font-semibold text-[#5B8C63]">Step 2</p>
+                <p className="mt-1 font-medium text-[#24352B]">Record expenses</p>
+                <p className="mt-1 text-sm text-[#6A756D]">
+                  Enter who paid and who should share the cost.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                <p className="text-sm font-semibold text-[#5B8C63]">Step 3</p>
+                <p className="mt-1 font-medium text-[#24352B]">Settle up</p>
+                <p className="mt-1 text-sm text-[#6A756D]">
+                  View balances and see who should pay whom.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
           <div className="grid gap-6 md:grid-cols-2">
             <GroupForm
               groupName={groupName}

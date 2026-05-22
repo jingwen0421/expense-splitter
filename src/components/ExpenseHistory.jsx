@@ -22,6 +22,18 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
                       {expense.title}
                     </h3>
 
+                    <p className="mt-1 text-xs text-[#6A756D]">
+                        {expense.createdAt
+                            ? new Date(expense.createdAt).toLocaleString("en-MY", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })
+                            : "No date"}
+                        </p>
+
                     <p className="mt-1 text-sm text-gray-600">
                       Paid by {expense.paidBy}
                     </p>
