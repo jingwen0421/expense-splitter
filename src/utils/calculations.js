@@ -8,15 +8,28 @@ export function calculateBalances(members, expenses) {
   expenses.forEach((expense) => {
     balances[expense.paidBy] += expense.amount;
 
-    expense.splitAmong.forEach((member) => {
-        const share =
-        expense.splitType === "unequal"
-            ? expense.customShares[member]
-            : expense.amount / expense.splitAmong.length;
-
+    if (expense.splitType === "unequal" && expense.unequalMethod === "amount") {
+      expense.splitAmong.forEach((member) => {
+        const share = Number(expense.customShares?.[member] || 0);
         balances[member] -= share;
-    });
-    });
+      });
+    } else if (
+      expense.splitType === "unequal" &&
+      expense.unequalMethod === "percentage"
+    ) {
+      expense.splitAmong.forEach((member) => {
+        const percentage = Number(expense.percentageShares?.[member] || 0);
+        const share = expense.amount * (percentage / 100);
+        balances[member] -= share;
+      });
+    } else {
+      const share = expense.amount / expense.splitAmong.length;
+
+      expense.splitAmong.forEach((member) => {
+        balances[member] -= share;
+      });
+    }
+  });
 
   return balances;
 }

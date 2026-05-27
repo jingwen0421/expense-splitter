@@ -3,6 +3,21 @@ import { useState } from "react";
 function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
   const [searchTerm, setSearchTerm] = useState("");
 
+  function getSplitTypeLabel(expense) {
+    if (expense.splitType === "unequal" && expense.unequalMethod === "amount") {
+      return "Unequal Split by Amount";
+    }
+
+    if (
+      expense.splitType === "unequal" &&
+      expense.unequalMethod === "percentage"
+    ) {
+      return "Unequal Split by Percentage";
+    }
+
+    return "Equal Split";
+  }
+
   const filteredExpenses = [...expenses]
     .filter((expense) => {
       const searchText = searchTerm.toLowerCase();
@@ -11,7 +26,7 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
         expense.title.toLowerCase().includes(searchText) ||
         expense.paidBy.toLowerCase().includes(searchText) ||
         expense.splitAmong.join(" ").toLowerCase().includes(searchText) ||
-        (expense.splitType || "equal").toLowerCase().includes(searchText)
+        getSplitTypeLabel(expense).toLowerCase().includes(searchText)
       );
     })
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -67,7 +82,7 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
               className="rounded-2xl border border-[#E5E1D8] p-4"
             >
               <div className="flex items-start justify-between gap-4">
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-[#24352B]">
                     {expense.title}
                   </h3>
@@ -94,9 +109,7 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
                   <p className="mt-1 text-sm text-[#6A756D]">
                     Split type:{" "}
                     <span className="font-medium text-[#24352B]">
-                      {expense.splitType === "unequal"
-                        ? "Unequal Split"
-                        : "Equal Split"}
+                      {getSplitTypeLabel(expense)}
                     </span>
                   </p>
 
@@ -104,30 +117,63 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
                     Split among: {expense.splitAmong.join(", ")}
                   </p>
 
-                  {expense.splitType === "unequal" && (
-                    <div className="mt-3 rounded-xl bg-[#F7F5F0] p-3">
-                      <p className="text-xs font-semibold text-[#24352B]">
-                        Custom Shares
-                      </p>
+                  {expense.splitType === "unequal" &&
+                    expense.unequalMethod === "amount" && (
+                      <div className="mt-3 rounded-xl bg-[#F7F5F0] p-3">
+                        <p className="text-xs font-semibold text-[#24352B]">
+                          Custom Shares
+                        </p>
 
-                      <div className="mt-2 space-y-1">
-                        {expense.splitAmong.map((member) => (
-                          <p
-                            key={member}
-                            className="flex justify-between text-xs text-[#6A756D]"
-                          >
-                            <span>{member}</span>
-                            <span>
-                              RM{" "}
-                              {Number(
-                                expense.customShares?.[member] || 0
-                              ).toFixed(2)}
-                            </span>
-                          </p>
-                        ))}
+                        <div className="mt-2 space-y-1">
+                          {expense.splitAmong.map((member) => (
+                            <p
+                              key={member}
+                              className="flex justify-between text-xs text-[#6A756D]"
+                            >
+                              <span>{member}</span>
+                              <span>
+                                RM{" "}
+                                {Number(
+                                  expense.customShares?.[member] || 0
+                                ).toFixed(2)}
+                              </span>
+                            </p>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+
+                  {expense.splitType === "unequal" &&
+                    expense.unequalMethod === "percentage" && (
+                      <div className="mt-3 rounded-xl bg-[#F7F5F0] p-3">
+                        <p className="text-xs font-semibold text-[#24352B]">
+                          Percentage Shares
+                        </p>
+
+                        <div className="mt-2 space-y-1">
+                          {expense.splitAmong.map((member) => {
+                            const percentage = Number(
+                              expense.percentageShares?.[member] || 0
+                            );
+                            const shareAmount =
+                              expense.amount * (percentage / 100);
+
+                            return (
+                              <p
+                                key={member}
+                                className="flex justify-between text-xs text-[#6A756D]"
+                              >
+                                <span>{member}</span>
+                                <span>
+                                  {percentage.toFixed(2)}% = RM{" "}
+                                  {shareAmount.toFixed(2)}
+                                </span>
+                              </p>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                 </div>
 
                 <div className="text-right">

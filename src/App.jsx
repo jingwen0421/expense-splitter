@@ -29,7 +29,9 @@ function App() {
   const [paidBy, setPaidBy] = useState("");
   const [splitAmong, setSplitAmong] = useState([]);
   const [splitType, setSplitType] = useState("equal");
+  const [unequalMethod, setUnequalMethod] = useState("amount");
   const [customShares, setCustomShares] = useState({});
+  const [percentageShares, setPercentageShares] = useState({});
   const [editingExpenseId, setEditingExpenseId] = useState(null);
 
   useEffect(() => {
@@ -166,41 +168,62 @@ function App() {
     if (splitAmong.includes(name)) {
       setSplitAmong(splitAmong.filter((member) => member !== name));
 
-      const updatedShares = { ...customShares };
-      delete updatedShares[name];
-      setCustomShares(updatedShares);
+      const updatedCustomShares = { ...customShares };
+      delete updatedCustomShares[name];
+      setCustomShares(updatedCustomShares);
+
+      const updatedPercentageShares = { ...percentageShares };
+      delete updatedPercentageShares[name];
+      setPercentageShares(updatedPercentageShares);
     } else {
       setSplitAmong([...splitAmong, name]);
+
       setCustomShares({
         ...customShares,
+        [name]: "",
+      });
+
+      setPercentageShares({
+        ...percentageShares,
         [name]: "",
       });
     }
   }
 
   function updateCustomShare(memberName, value) {
-  setCustomShares({
-    ...customShares,
-    [memberName]: value,
-  });
-}
+    setCustomShares({
+      ...customShares,
+      [memberName]: value,
+    });
+  }
+
+  function updatePercentageShare(memberName, value) {
+    setPercentageShares({
+      ...percentageShares,
+      [memberName]: value,
+    });
+  }
 
   function selectAllMembers() {
     setSplitAmong(members);
 
     const shares = {};
+    const percentages = {};
+
     members.forEach((member) => {
       shares[member] = customShares[member] || "";
+      percentages[member] = percentageShares[member] || "";
     });
 
     setCustomShares(shares);
+    setPercentageShares(percentages);
   }
 
   function clearSelectedMembers() {
     setSplitAmong([]);
     setCustomShares({});
+    setPercentageShares({});
   }
-
   function addExpense() {
     if (!selectedGroup) {
       showToast("Please create or select a group first.");
@@ -230,8 +253,9 @@ function App() {
     }
 
     let finalCustomShares = {};
+    let finalPercentageShares = {};
 
-    if (splitType === "unequal") {
+    if (splitType === "unequal" && unequalMethod === "amount") {
       let totalCustomShare = 0;
 
       for (const member of splitAmong) {
@@ -252,6 +276,27 @@ function App() {
       }
     }
 
+    if (splitType === "unequal" && unequalMethod === "percentage") {
+      let totalPercentage = 0;
+
+      for (const member of splitAmong) {
+        const percentage = parseFloat(percentageShares[member]);
+
+        if (isNaN(percentage) || percentage < 0) {
+          showToast("Please enter valid percentages.");
+          return;
+        }
+
+        finalPercentageShares[member] = percentage;
+        totalPercentage += percentage;
+      }
+
+      if (Math.abs(totalPercentage - 100) > 0.01) {
+        showToast("Percentages must add up to 100%.");
+        return;
+      }
+    }
+
     const savedExpense = {
       id: editingExpenseId || Date.now().toString(),
       title: expenseTitle.trim(),
@@ -259,7 +304,15 @@ function App() {
       paidBy,
       splitAmong,
       splitType,
-      customShares: splitType === "unequal" ? finalCustomShares : {},
+      unequalMethod: splitType === "unequal" ? unequalMethod : null,
+      customShares:
+        splitType === "unequal" && unequalMethod === "amount"
+          ? finalCustomShares
+          : {},
+      percentageShares:
+        splitType === "unequal" && unequalMethod === "percentage"
+          ? finalPercentageShares
+          : {},
       createdAt:
         expenses.find((expense) => expense.id === editingExpenseId)?.createdAt ||
         new Date().toISOString(),
@@ -296,7 +349,9 @@ function App() {
     setPaidBy(expense.paidBy);
     setSplitAmong(expense.splitAmong);
     setSplitType(expense.splitType || "equal");
+    setUnequalMethod(expense.unequalMethod || "amount");
     setCustomShares(expense.customShares || {});
+    setPercentageShares(expense.percentageShares || {});
     setActiveTab("add");
   }
 
@@ -307,6 +362,7 @@ function App() {
     setSplitAmong([]);
     setSplitType("equal");
     setCustomShares({});
+    setPercentageShares({});
     setEditingExpenseId(null);
   }
 
@@ -573,12 +629,16 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
               splitAmong={splitAmong}
               toggleSplitMember={toggleSplitMember}
               addExpense={addExpense}
+              unequalMethod={unequalMethod}
+              setUnequalMethod={setUnequalMethod}
               editingExpenseId={editingExpenseId}
               resetExpenseForm={resetExpenseForm}
               splitType={splitType}
               setSplitType={setSplitType}
               customShares={customShares}
               updateCustomShare={updateCustomShare}
+              percentageShares={percentageShares}
+              updatePercentageShare={updatePercentageShare}
               selectAllMembers={selectAllMembers}
               clearSelectedMembers={clearSelectedMembers}
             />
