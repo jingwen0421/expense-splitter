@@ -508,7 +508,7 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
           {toast}
         </div>
       )}
-      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-[320px_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[340px_1fr]">
        <GroupSidebar
           groups={groups}
           selectedGroupId={selectedGroupId}
