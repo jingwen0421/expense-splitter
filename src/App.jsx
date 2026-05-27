@@ -271,7 +271,22 @@ function App() {
       }
 
       if (Math.abs(totalCustomShare - numericAmount) > 0.01) {
-        showToast("Unequal shares must add up to the total amount.");
+        const difference = numericAmount - totalCustomShare;
+
+        if (difference > 0) {
+          showToast(
+            `Current total is RM ${totalCustomShare.toFixed(
+              2
+            )}. Please add RM ${difference.toFixed(2)} more.`
+          );
+        } else {
+          showToast(
+            `Current total is RM ${totalCustomShare.toFixed(
+              2
+            )}. Please reduce RM ${Math.abs(difference).toFixed(2)}.`
+          );
+        }
+
         return;
       }
     }
@@ -292,7 +307,22 @@ function App() {
       }
 
       if (Math.abs(totalPercentage - 100) > 0.01) {
-        showToast("Percentages must add up to 100%.");
+        const difference = 100 - totalPercentage;
+
+        if (difference > 0) {
+          showToast(
+            `Current total is ${totalPercentage.toFixed(
+              2
+            )}%. Please add ${difference.toFixed(2)}% more.`
+          );
+        } else {
+          showToast(
+            `Current total is ${totalPercentage.toFixed(
+              2
+            )}%. Please reduce ${Math.abs(difference).toFixed(2)}%.`
+          );
+        }
+
         return;
       }
     }
@@ -453,6 +483,9 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
   const totalSpending = expenses.reduce((total, expense) => {
     return total + expense.amount;
   }, 0);
+
+
+  
 
   return (
       <div className="min-h-screen bg-[#F7F5F0] px-4 py-8 text-[#24352B]">      {toast && (
