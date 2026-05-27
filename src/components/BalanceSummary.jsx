@@ -4,12 +4,12 @@ function BalanceSummary({ members, balances }) {
   return (
     <div className="rounded-2xl bg-white p-6 shadow">
       <h2 className="text-xl font-semibold text-gray-800">
-        Balance Summary
+        Outstanding Balance
       </h2>
 
       <div className="mt-3 space-y-2">
         {members.length === 0 ? (
-          <p className="text-sm text-gray-500">No balances yet.</p>
+          <p className="text-sm text-gray-500">No outstanding balance yet.</p>
         ) : (
           members.map((member) => {
             const balance = Math.round(balances[member] * 100) / 100;

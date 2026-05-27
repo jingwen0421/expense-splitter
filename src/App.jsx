@@ -46,6 +46,7 @@ function App() {
 
   const members = selectedGroup ? selectedGroup.members : [];
   const expenses = selectedGroup ? selectedGroup.expenses : [];
+  const paidSettlements = selectedGroup ? selectedGroup.paidSettlements || [] : [];
   const groupName = selectedGroup ? selectedGroup.name : "";
 
   function updateSelectedGroup(updatedData) {
@@ -77,6 +78,7 @@ function App() {
       name,
       members: [],
       expenses: [],
+      paidSettlements: [],
       createdAt: new Date().toISOString(),
     };
 
@@ -308,6 +310,47 @@ function App() {
     setEditingExpenseId(null);
   }
 
+  function getSettlementId(settlement) {
+    return `${settlement.from}-${settlement.to}-${settlement.amount.toFixed(2)}`;
+  }
+
+  function toggleSettlementPaid(settlement) {
+    if (!selectedGroup) return;
+
+    const settlementId = getSettlementId(settlement);
+
+    const alreadyPaid = paidSettlements.some(
+      (item) => item.id === settlementId
+    );
+
+    let updatedPaidSettlements;
+
+    if (alreadyPaid) {
+      updatedPaidSettlements = paidSettlements.filter(
+        (item) => item.id !== settlementId
+      );
+
+      showToast("Settlement marked as unpaid.");
+    } else {
+      updatedPaidSettlements = [
+        ...paidSettlements,
+        {
+          id: settlementId,
+          from: settlement.from,
+          to: settlement.to,
+          amount: settlement.amount,
+          paidAt: new Date().toISOString(),
+        },
+      ];
+
+      showToast("Settlement marked as paid.");
+    }
+
+    updateSelectedGroup({
+      paidSettlements: updatedPaidSettlements,
+    });
+  }
+
   function resetApp() {
     const confirmReset = confirm("Are you sure you want to reset this group?");
 
@@ -324,6 +367,32 @@ function App() {
 
   const balances = selectedGroup ? calculateBalances(members, expenses) : {};
   const settlements = calculateSettlements(balances);
+
+function calculateOutstandingBalances(members, balances, paidSettlements) {
+    const outstandingBalances = { ...balances };
+
+    paidSettlements.forEach((payment) => {
+      if (outstandingBalances[payment.from] !== undefined) {
+        outstandingBalances[payment.from] += payment.amount;
+      }
+
+      if (outstandingBalances[payment.to] !== undefined) {
+        outstandingBalances[payment.to] -= payment.amount;
+      }
+    });
+
+    members.forEach((member) => {
+      if (Math.abs(outstandingBalances[member]) < 0.01) {
+        outstandingBalances[member] = 0;
+      }
+    });
+
+    return outstandingBalances;
+  }
+
+  const outstandingBalances = selectedGroup
+    ? calculateOutstandingBalances(members, balances, paidSettlements)
+    : {};
 
   const totalSpending = expenses.reduce((total, expense) => {
     return total + expense.amount;
@@ -479,9 +548,15 @@ function App() {
           </div>
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <BalanceSummary members={members} balances={balances} />
+            <BalanceSummary members={members} balances={outstandingBalances} />
 
-            <SettlementSummary settlements={settlements} />
+            <SettlementSummary
+              groupName={groupName}
+              settlements={settlements}
+              paidSettlements={paidSettlements}
+              toggleSettlementPaid={toggleSettlementPaid}
+              getSettlementId={getSettlementId}
+            />
           </div>
         </>
           )}
