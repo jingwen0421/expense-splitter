@@ -27,6 +27,14 @@ https://github.com/jingwen0421/expense-splitter
 - Expense history with date and time
 - Data persistence using browser localStorage
 - Responsive and user-friendly interface
+- Equal split calculation
+- Unequal split by amount
+- Unequal split by percentage
+- Running total validation for unequal splits
+- Settlement payment status tracking
+- Outstanding balance after completed payments
+- Copy settlement summary with outstanding and completed payments
+- Search expense history
 
 ## Tech Stack
 
@@ -84,8 +92,8 @@ Another challenge was member deletion. I added a guard to prevent users from rem
 npm install
 npm run dev
 ```
-
 Then open the local development link shown in the terminal.
 
 ## AI Usage Disclosure
+
 AI tools were used as a learning, planning, and debugging assistant during development. The final implementation was reviewed, tested, customized, and organized by me.
