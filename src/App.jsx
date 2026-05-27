@@ -585,25 +585,27 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
                   </div>
                 </div>
               </div>
-            <div className="mb-6 flex flex-wrap gap-2">
-            {[
-              { id: "overview", label: "Overview" },
-              { id: "add", label: "Add / Edit Expense" },
-              { id: "history", label: " Expense History" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  activeTab === tab.id
-                    ? "bg-[#24352B] text-white"
-                    : "bg-white text-[#6A756D] hover:bg-[#EEF6EF] hover:text-[#5B8C63]"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+              <div className="mb-6 rounded-3xl bg-white p-2 shadow-sm">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "overview", label: "Overview" },
+                    { id: "add", label: "Add / Edit Expense" },
+                    { id: "history", label: "Expense History" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`rounded-2xl px-5 py-3 text-sm font-semibold transition ${
+                        activeTab === tab.id
+                          ? "bg-[#24352B] text-white"
+                          : "text-[#6A756D] hover:bg-[#EEF6EF] hover:text-[#5B8C63]"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
         {activeTab === "overview" && (
         <>
           {members.length === 0 && expenses.length === 0 && (

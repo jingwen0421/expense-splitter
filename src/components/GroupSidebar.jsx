@@ -58,27 +58,30 @@ function GroupSidebar({
             groups.map((group) => (
               <div
                 key={group.id}
-                className={`flex items-center justify-between rounded-lg border p-3 ${
+                className={`rounded-2xl border p-3 ${
                   selectedGroupId === group.id
-                    ? "border-gray-800 bg-gray-100"
-                    : "border-gray-200 bg-white"
+                    ? "border-[#5B8C63] bg-[#EEF6EF]"
+                    : "border-[#E5E1D8] bg-white"
                 }`}
               >
-                <button
-                  onClick={() => selectGroup(group.id)}
-                  className="text-left"
-                >
-                  <p className="font-semibold text-gray-800">{group.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {group.members.length} members · {group.expenses.length} expenses
-                  </p>
-                </button>
+                <div className="flex items-start justify-between gap-2">
+                  <button
+                    onClick={() => selectGroup(group.id)}
+                    className="flex-1 text-left"
+                  >
+                    <p className="font-semibold text-[#24352B]">{group.name}</p>
+                    <p className="mt-1 text-xs text-[#6A756D]">
+                      {group.members.length} members · {group.expenses.length} expenses
+                    </p>
+                  </button>
 
-                <button
-                  onClick={() => deleteGroup(group.id)}
-                  className="text-xs font-medium text-red-600 hover:text-red-700 hover:underline"                >
-                  Delete
-                </button>
+                  <button
+                    onClick={() => deleteGroup(group.id)}
+                    className="text-xs font-medium text-red-500 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))
           )}
