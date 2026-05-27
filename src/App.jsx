@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { calculateBalances, calculateSettlements } from "./utils/calculations";
 
 import GroupSidebar from "./components/GroupSidebar";
-import GroupForm from "./components/GroupForm";
 import ExpenseForm from "./components/ExpenseForm";
 import GroupSummary from "./components/GroupSummary";
 import BalanceSummary from "./components/BalanceSummary";
 import SettlementSummary from "./components/SettlementSummary";
 import ExpenseHistory from "./components/ExpenseHistory";
+import CategoryPieChart from "./components/CategoryPieChart";
 
 function App() {
   const [groups, setGroups] = useState(() => {
@@ -359,6 +359,7 @@ function App() {
 
     updateSelectedGroup({
       expenses: updatedExpenses,
+      paidSettlements: [],
     });
 
     resetExpenseForm();
@@ -369,6 +370,7 @@ function App() {
   function deleteExpense(id) {
     updateSelectedGroup({
       expenses: expenses.filter((expense) => expense.id !== id),
+      paidSettlements: [],
     });
 
      showToast("Expense deleted.");
@@ -395,6 +397,7 @@ function App() {
     setPaidBy("");
     setSplitAmong([]);
     setSplitType("equal");
+    setUnequalMethod("amount");
     setCustomShares({});
     setPercentageShares({});
     setEditingExpenseId(null);
@@ -446,9 +449,10 @@ function App() {
 
     if (!confirmReset || !selectedGroup) return;
 
-    updateSelectedGroup({
+   updateSelectedGroup({
       members: [],
       expenses: [],
+      paidSettlements: [],
     });
 
     setMemberInput("");
@@ -488,6 +492,13 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
     return total + expense.amount;
   }, 0);
 
+  const categoryTotals = expenses.reduce((totals, expense) => {
+    const categoryName = expense.category || "Others";
+
+    totals[categoryName] = (totals[categoryName] || 0) + expense.amount;
+
+    return totals;
+  }, {});
 
   
 
@@ -498,7 +509,7 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
         </div>
       )}
       <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-[320px_1fr]">
-        <GroupSidebar
+       <GroupSidebar
           groups={groups}
           selectedGroupId={selectedGroupId}
           newGroupName={newGroupName}
@@ -506,6 +517,14 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
           createGroup={createGroup}
           selectGroup={selectGroup}
           deleteGroup={deleteGroup}
+          selectedGroup={selectedGroup}
+          groupName={groupName}
+          setGroupName={setGroupName}
+          memberInput={memberInput}
+          setMemberInput={setMemberInput}
+          members={members}
+          addMember={addMember}
+          removeMember={removeMember}
         />
 
         <main>
@@ -585,74 +604,70 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
               </button>
             ))}
           </div>
-      {activeTab === "overview" && (
+        {activeTab === "overview" && (
         <>
-        {members.length === 0 && expenses.length === 0 && (
-          <div className="mb-6 rounded-3xl border border-dashed border-[#D8D4CA] bg-white p-6 shadow-sm">
-            <h3 className="text-xl font-bold text-[#24352B]">
-              Start in 3 simple steps
-            </h3>
+          {members.length === 0 && expenses.length === 0 && (
+            <div className="mb-6 rounded-3xl border border-dashed border-[#D8D4CA] bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-bold text-[#24352B]">
+                Start in 3 simple steps
+              </h3>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              <div className="rounded-2xl bg-[#F7F5F0] p-4">
-                <p className="text-sm font-semibold text-[#5B8C63]">Step 1</p>
-                <p className="mt-1 font-medium text-[#24352B]">Add members</p>
-                <p className="mt-1 text-sm text-[#6A756D]">
-                  Add friends, housemates, or trip members.
-                </p>
-              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                  <p className="text-sm font-semibold text-[#5B8C63]">Step 1</p>
+                  <p className="mt-1 font-medium text-[#24352B]">Add members</p>
+                  <p className="mt-1 text-sm text-[#6A756D]">
+                    Add members from the left sidebar.
+                  </p>
+                </div>
 
-              <div className="rounded-2xl bg-[#F7F5F0] p-4">
-                <p className="text-sm font-semibold text-[#5B8C63]">Step 2</p>
-                <p className="mt-1 font-medium text-[#24352B]">Record expenses</p>
-                <p className="mt-1 text-sm text-[#6A756D]">
-                  Enter who paid and who should share the cost.
-                </p>
-              </div>
+                <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                  <p className="text-sm font-semibold text-[#5B8C63]">Step 2</p>
+                  <p className="mt-1 font-medium text-[#24352B]">Record expenses</p>
+                  <p className="mt-1 text-sm text-[#6A756D]">
+                    Use the Add / Edit Expense tab to record shared costs.
+                  </p>
+                </div>
 
-              <div className="rounded-2xl bg-[#F7F5F0] p-4">
-                <p className="text-sm font-semibold text-[#5B8C63]">Step 3</p>
-                <p className="mt-1 font-medium text-[#24352B]">Settle up</p>
-                <p className="mt-1 text-sm text-[#6A756D]">
-                  View balances and see who should pay whom.
-                </p>
+                <div className="rounded-2xl bg-[#F7F5F0] p-4">
+                  <p className="text-sm font-semibold text-[#5B8C63]">Step 3</p>
+                  <p className="mt-1 font-medium text-[#24352B]">Settle up</p>
+                  <p className="mt-1 text-sm text-[#6A756D]">
+                    View outstanding balances and completed payments.
+                  </p>
+                </div>
               </div>
             </div>
+          )}
+
+          <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
+  <BalanceSummary members={members} balances={outstandingBalances} />
+
+  <SettlementSummary
+    groupName={groupName}
+    settlements={settlements}
+    paidSettlements={paidSettlements}
+    toggleSettlementPaid={toggleSettlementPaid}
+    getSettlementId={getSettlementId}
+  />
           </div>
-        )}
-          <div className="grid gap-6 md:grid-cols-2">
-            <GroupForm
-              groupName={groupName}
-              setGroupName={setGroupName}
-              memberInput={memberInput}
-              setMemberInput={setMemberInput}
-              members={members}
-              addMember={addMember}
-              removeMember={removeMember}
-            />
+
+          <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+            <CategoryPieChart categoryTotals={categoryTotals} />
 
             <GroupSummary
               groupName={groupName}
               members={members}
               expenses={expenses}
               totalSpending={totalSpending}
+              categoryTotals={categoryTotals}
               resetApp={resetApp}
             />
           </div>
 
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <BalanceSummary members={members} balances={outstandingBalances} />
-
-            <SettlementSummary
-              groupName={groupName}
-              settlements={settlements}
-              paidSettlements={paidSettlements}
-              toggleSettlementPaid={toggleSettlementPaid}
-              getSettlementId={getSettlementId}
-            />
-          </div>
+      
         </>
-          )}
+      )}
 
           {activeTab === "add" && (
             <ExpenseForm

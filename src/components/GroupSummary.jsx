@@ -3,6 +3,7 @@ function GroupSummary({
   members,
   expenses,
   totalSpending,
+  categoryTotals,
   resetApp,
 }) {
   return (
@@ -28,6 +29,32 @@ function GroupSummary({
         <span className="font-medium">Total Spending:</span> RM{" "}
         {totalSpending.toFixed(2)}
       </p>
+
+      <div className="mt-4">
+  <p className="text-sm font-medium text-[#24352B]">
+    Spending by Category
+  </p>
+
+  <div className="mt-2 space-y-2">
+      {Object.keys(categoryTotals).length === 0 ? (
+        <p className="text-sm text-[#6A756D]">
+          No category spending yet.
+        </p>
+      ) : (
+        Object.entries(categoryTotals).map(([category, total]) => (
+          <div
+            key={category}
+            className="flex justify-between rounded-xl bg-[#F7F5F0] px-3 py-2 text-sm"
+          >
+            <span className="font-medium text-[#24352B]">{category}</span>
+            <span className="font-semibold text-[#5B8C63]">
+              RM {total.toFixed(2)}
+            </span>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
 
       <button
         onClick={resetApp}
