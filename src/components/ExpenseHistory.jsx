@@ -27,12 +27,30 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
       </p>
 
       <div className="mt-4">
-        <input
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          className="w-full rounded-xl border border-[#D8D4CA] bg-[#F7F5F0] px-4 py-3 text-sm outline-none focus:border-[#5B8C63]"
-          placeholder="Search by title, payer, member, or split type..."
-        />
+        <div className="flex gap-2">
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            className="w-full rounded-xl border border-[#D8D4CA] bg-[#F7F5F0] px-4 py-3 text-sm outline-none focus:border-[#5B8C63]"
+            placeholder="Search by title, payer, member, or split type..."
+          />
+
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="rounded-xl bg-[#EEF6EF] px-4 py-2 text-sm font-semibold text-[#5B8C63] hover:bg-[#DDEEDD]"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {expenses.length > 0 && (
+          <p className="mt-2 text-xs text-[#6A756D]">
+            Showing {filteredExpenses.length} of {expenses.length} expense
+            {expenses.length > 1 ? "s" : ""}
+          </p>
+        )}
       </div>
 
       <div className="mt-4 space-y-3">
