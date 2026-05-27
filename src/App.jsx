@@ -27,6 +27,7 @@ function App() {
   const [expenseTitle, setExpenseTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [paidBy, setPaidBy] = useState("");
+  const [category, setCategory] = useState("Food");
   const [splitAmong, setSplitAmong] = useState([]);
   const [splitType, setSplitType] = useState("equal");
   const [unequalMethod, setUnequalMethod] = useState("amount");
@@ -331,6 +332,7 @@ function App() {
       id: editingExpenseId || Date.now().toString(),
       title: expenseTitle.trim(),
       amount: numericAmount,
+      category,
       paidBy,
       splitAmong,
       splitType,
@@ -376,6 +378,7 @@ function App() {
     setEditingExpenseId(expense.id);
     setExpenseTitle(expense.title);
     setAmount(expense.amount.toString());
+    setCategory(expense.category || "Others");
     setPaidBy(expense.paidBy);
     setSplitAmong(expense.splitAmong);
     setSplitType(expense.splitType || "equal");
@@ -388,6 +391,7 @@ function App() {
   function resetExpenseForm() {
     setExpenseTitle("");
     setAmount("");
+    setCategory("Food");
     setPaidBy("");
     setSplitAmong([]);
     setSplitType("equal");
@@ -657,6 +661,8 @@ function calculateOutstandingBalances(members, balances, paidSettlements) {
               setExpenseTitle={setExpenseTitle}
               amount={amount}
               setAmount={setAmount}
+              category={category}
+              setCategory={setCategory}
               paidBy={paidBy}
               setPaidBy={setPaidBy}
               splitAmong={splitAmong}

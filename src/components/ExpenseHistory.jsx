@@ -26,6 +26,7 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
         expense.title.toLowerCase().includes(searchText) ||
         expense.paidBy.toLowerCase().includes(searchText) ||
         expense.splitAmong.join(" ").toLowerCase().includes(searchText) ||
+        (expense.category || "Others").toLowerCase().includes(searchText) ||
         getSplitTypeLabel(expense).toLowerCase().includes(searchText)
       );
     })
@@ -97,6 +98,10 @@ function ExpenseHistory({ expenses, deleteExpense, editExpense }) {
                           minute: "2-digit",
                         })
                       : "No date"}
+                  </p>
+
+                  <p className="mt-2 inline-flex rounded-full bg-[#EEF6EF] px-3 py-1 text-xs font-semibold text-[#5B8C63]">
+                    {expense.category || "Others"}
                   </p>
 
                   <p className="mt-2 text-sm text-[#6A756D]">

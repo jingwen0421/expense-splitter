@@ -4,6 +4,8 @@ function ExpenseForm({
   setExpenseTitle,
   amount,
   setAmount,
+  category,
+  setCategory,
   paidBy,
   setPaidBy,
   splitAmong,
@@ -91,6 +93,21 @@ function ExpenseForm({
         value={amount}
         onChange={(event) => setAmount(event.target.value)}
       />
+
+      <label className="mt-4 block text-sm font-medium text-[#24352B]">
+        Category
+      </label>
+      <select
+        className="mt-1 w-full rounded-xl border border-[#D8D4CA] bg-[#F7F5F0] p-3 text-sm outline-none focus:border-[#5B8C63]"
+        value={category}
+        onChange={(event) => setCategory(event.target.value)}
+      >
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Accommodation">Accommodation</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Others">Others</option>
+      </select>
 
       <label className="mt-4 block text-sm font-medium text-[#24352B]">
         Paid By
